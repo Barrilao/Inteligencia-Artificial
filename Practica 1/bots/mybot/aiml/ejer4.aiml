@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.0">
+  <!-- Ejercicio 4 -->
+
+  <category>
+    <pattern>como es el pelo de <set>compi</set></pattern>
+    <template>El pelo de <star/> es <map name="pelo"><star/></map></template>
+  </category>
+
+  <category>
+    <pattern>como es el pelo de *</pattern>
+    <template>No se como es el pelo de <star/></template>
+  </category>
+
+  <category>
+    <pattern>como son los ojos de <set>compi</set></pattern>
+    <template>Los ojos de <star/> son <map name="ojos"><star/></map></template>
+  </category>
+
+  <category>
+    <pattern>como son los ojos de *</pattern>
+    <template>No se como son los ojos de <star/></template>
+  </category>
+
+</aiml>

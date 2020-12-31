@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.0">
+
+  <!-- Ejercicio 1 -->
+
+  <!-- Regla 1 comentada para que no afecte al ejercicio 2 -->
+  <!-- <category>
+    <pattern>Hola</pattern>
+    <template>Hola, que tal?</template>
+  </category> -->
+
+  <!-- Regla 2 -->
+  <category>
+    <pattern>yo bien, que tal tu</pattern>
+    <template>Estoy genial!!!</template>
+  </category>
+
+  <!-- Regla 3 -->
+  <category>
+    <pattern>como te llamas</pattern>
+    <template>Mi nombre es HALfonso</template>
+  </category>
+
+  <!-- Ejercicio 2 -->
+
+  <!-- Debe aparecer una palabra mas en la entrada -->
+  <category>
+      <pattern>Hola *</pattern>
+      <template>Hola, que tal?</template>
+  </category>
+
+  <!-- Sin que aparezca una palabra mas -->
+  <category>
+      <pattern>Hola</pattern>
+      <template>Hola de nuevo, que tal?</template>
+  </category>
+
+  <!-- Debe aparecer una palabra mas en la entrada -->
+  <category>
+      <pattern>^ que tal tu</pattern>
+      <template>Estoy genial!!!</template>
+  </category>
+
+  <!-- Deba tener un comodín vinculado al final -->
+  <category>
+      <pattern>^ me llamo *</pattern>
+      <template>
+        <think><set name="nombre"><star index ="2"/></set></think>
+        <get name="nombre"/> es un bonito nombre.
+      </template>
+  </category>
+
+  <!-- Regla 5 Deba mostrar la edad almacenada en properties.txt -->
+  <category>
+    <pattern>Cual es tu edad</pattern>
+    <template>Tengo <bot name="age"/> anios</template>
+  </category>
+
+  <!--Regla 6 Devolver nombre de usuario -->
+  <category>
+    <pattern>Cual es mi nombre</pattern>
+    <template>
+      <condition name="nombre">
+        <li value="unknown">Aun no me has dicho tu nombre</li>
+        <li>Tu nombre es <get name="nombre"/></li>
+      </condition>
+    </template>
+  </category>
+
+  <!-- Regla 7 -->
+  <category>
+    <pattern>mi color favorito es el *</pattern>
+    <template>
+      <think><set var="color"><star/></set></think>
+      El <get var="color"/> es un color que no me gusta.
+    </template>
+  </category>
+
+  <!-- Regla 8 -->
+  <category>
+    <pattern>* mi nombre</pattern>
+    <template><srai>CUAL ES MI NOMBRE</srai></template>
+  </category>
+
+  <!-- Regla 9 -->
+  <category>
+    <pattern>^ como me llamo</pattern>
+    <template><srai>CUAL ES MI NOMBRE</srai></template>
+  </category>
+
+  <!-- Ejercicio 3 -->
+  <category>
+    <pattern>muy buenas ^</pattern>
+    <template><srai>HOLA</srai></template>
+  </category>
+
+  <category>
+    <pattern>hi ^</pattern>
+    <template><srai>HOLA</srai></template>
+  </category>
+
+  <category>
+    <pattern>saludos ^</pattern>
+    <template><srai>HOLA</srai></template>
+  </category>
+
+  <category>
+    <pattern>buenas</pattern>
+    <template><srai>HOLA</srai></template>
+  </category>
+
+  <category>
+    <pattern>buenos dias</pattern>
+    <template><srai>HOLA</srai></template>
+  </category>
+
+  <category>
+    <pattern>buenas tardes ^</pattern>
+    <template><srai>HOLA</srai></template>
+  </category>
+
+  <category>
+    <pattern>buenas noches ^</pattern>
+    <template><srai>HOLA</srai></template>
+  </category>
+
+  <!-- Regla 10 -->
+  <category>
+    <pattern>es <set>color</set> un color</pattern>
+    <template>Si, <star/> es un color.</template>
+  </category>
+
+  <!-- Regla 11 -->
+  <category>
+    <pattern>es * un color</pattern>
+    <template>No, <star/> es un color.</template>
+  </category>
+
+  <!-- Regla 12 -->
+  <category>
+    <pattern>cual es la capital de <set>pais</set></pattern>
+    <template>La capital de <star/> es <map name="capital"><star/></map></template>
+  </category>
+
+  <!-- Regla 13 -->
+  <category>
+    <pattern>cual es la capital de *</pattern>
+    <template>No se cual es la capital de <star/>.</template>
+  </category>
+
+  <!-- Regla 14 -->
+  <category>
+    <pattern>^ cafe ^</pattern>
+    <template>Te gusta el <set name="topic"> cafe</set>?</template>
+  </category>
+
+  <topic name="cafe">
+    <!-- Regla 15 -->
+    <category>
+      <pattern>Si</pattern>
+      <that>TE GUSTA EL CAFE</that>
+      <template>Muy rico el cafelito</template>
+    </category>
+  </topic>
+
+  <!--Regla 16 -->
+  <category>
+    <pattern>cuenta hasta <set>number</set></pattern>
+    <template>
+      <think>
+        <set var="contador">1</set>
+        <set var="salida">1</set>
+      </think>
+      <condition var="contador">
+        <li><value><star/></value><get var="salida"/></li>
+        <li>
+          <think>
+            <set var="contador">
+              <map name="successor"> <get var="contador"/></map>
+            </set>
+            <set var="salida"><get var="salida"/> <get var="contador"/></set>
+          </think>
+          <loop/>
+        </li>
+      </condition>
+    </template>
+  </category>
+
+  <!-- Parte del nivel 1 hecho en la pizarra -->
+  <category>
+    <pattern> ESTALIBREEL * </pattern>
+    <template>
+      <think>
+      <set var="lista"><srai> LIST OF DAY <star/></srai></set>
+      <set var="lista"><srai> SUBLIST FROM 9 TO 20 OF <get var="lista"/></srai></set>
+      <set var="contador">1</set>
+      <set var="item"><srai> SELECTITEM <get var="contador"/> in <get var="lista"/></srai></set>
+    </think>
+      <condition var = "item">
+        <li value="$"> Este dia no esta libre</li>
+        <li value="null"> Este dia tiene huecos libres </li>
+        <li>
+          <think>
+          <set var="contador"><map name="successor"><get var="contador"/></map></set>
+          <set var="item"><srai> SELECTITEM <get var="contador"/> in <get var="lista"/></srai></set>
+        </think>
+          <loop/>
+        </li>
+      </condition>
+    </template>
+  </category>
+
+
+</aiml>

@@ -1,0 +1,8 @@
+antonio:azules
+alberto:marrones
+ana:verdes
+juan:verdes
+manolo:marrones
+julia:marrones
+elena:azules
+jose:marrones

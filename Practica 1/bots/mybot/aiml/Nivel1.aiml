@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.0">
+
+  <!-- Esta función es redundante, la hago para tenerla a la vista.
+    Simplemente llama a IS BUSY DAY * AT * -->
+  <category>
+    <pattern>ESTA OCUPADO EL DIA * A LAS *</pattern>
+    <template>
+      <think>
+        <set var="dia"><star/></set>
+        <set var="hora"><star index="2"/></set>
+      </think>
+      <srai>IS BUSY DAY <get var="dia"/> AT <get var="hora"/></srai>
+    </template>
+  </category>
+
+  <!-- Devuelve si esta ocupado un dia completo o no -->
+  <category>
+    <pattern>ESTA OCUPADO EL DIA *</pattern>
+    <template>
+        <think>
+        <set var="dia"><star/></set>
+        <set var="contador">8</set>
+        <set var="salida">TRUE</set>
+        <condition var="contador">
+          <li><value>21</value></li>
+          <li>
+            <condition var="salida">
+              <li value="TRUE">
+                <condition var="contador">
+                    <li value="8"><set var="salida"><srai>ESTA OCUPADO EL DIA <get var="dia"/> A LAS 0<get var="contador"/>:00</srai></set></li>
+                    <li value="9"><set var="salida"><srai>ESTA OCUPADO EL DIA <get var="dia"/> A LAS 0<get var="contador"/>:00</srai></set></li>
+                    <li ><set var="salida"><srai>ESTA OCUPADO EL DIA <get var="dia"/> A LAS <get var="contador"/>:00</srai></set></li>
+                </condition>
+              </li>
+            </condition>
+            <set var="contador">
+              <map name="successor"><get var="contador"/></map>
+            </set>
+            <loop/>
+          </li>
+        </condition>
+      </think>
+      <get var="salida"/>
+    </template>
+  </category>
+
+  <!-- Devuelve la lista de horas libres en una determinada franja (posiciones) -->
+  <category>
+    <pattern>FRANJAS LIBRES DEL DIA * DESDE LAS * HASTA LAS *</pattern>
+    <template>
+      <think>
+      <set var="dia"><star index="1"/></set>
+      <set var="parada"><srai>ORDINAL <star index="3"/></srai></set>
+      <set var="contador"><srai>MINUS <srai>ORDINAL <star index="2"/></srai> 1</srai></set>
+      <set var="salida">null</set>
+      <condition var="contador">
+        <li><value><get var="parada"/></value></li>
+        <li>
+
+          <set var="aux">null</set>
+          <condition var="contador">
+            <li value="8"><set var="aux"><srai>ESTA OCUPADO EL DIA <get var="dia"/> A LAS 0<get var="contador"/>:00</srai></set></li>
+            <li value="9"><set var="aux"><srai>ESTA OCUPADO EL DIA <get var="dia"/> A LAS 0<get var="contador"/>:00</srai></set></li>
+            <li><set var="aux"><srai>ESTA OCUPADO EL DIA <get var="dia"/> A LAS <get var="contador"/>:00</srai></set></li>
+          </condition>
+          <condition var="aux">
+            <li value="FALSE">
+              <condition var="salida">
+                <li value="null"><set var="salida"><map name="successor"><get var="contador"/></map></set></li>
+                <li><set var="salida"><get var="salida"/> <map name="successor"><get var="contador"/></map></set></li>
+              </condition>
+            </li>
+          </condition>
+          <set var="contador">
+            <map name="successor"><get var="contador"/></map>
+          </set>
+          <loop/>
+        </li>
+      </condition>
+      </think>
+      <get var="salida"/>
+    </template>
+  </category>
+
+  <!-- Devuelve la lista de horas libres en la franja de la mañana (posiciones) -->
+
+  <category>
+    <pattern>FRANJAS LIBRES DIA * POR LA MANANA</pattern>
+    <template><srai>FRANJAS LIBRES DEL DIA <star/> DESDE LAS 08:00 HASTA LAS 12:00</srai></template>
+  </category>
+
+  <!-- Devuelve la lista de horas libres en la franja de la tarde (posiciones) -->
+
+  <category>
+    <pattern>FRANJAS LIBRES DIA * POR LA TARDE</pattern>
+    <template><srai>FRANJAS LIBRES DEL DIA <star/> DESDE LAS 13:00 HASTA LAS 20:00</srai></template>
+  </category>
+
+  <!-- Comprobar si un dia está ocupado -->
+
+  <category>
+    <pattern>* una cita (para) el dia *</pattern>
+    <template>
+      <think><set var="salida"><srai>ESTA OCUPADO EL DIA <star index="2"/></srai></set></think>
+      <condition var="salida">
+        <li value="FALSE">
+          <think><set name="dia"><star index="2"/></set><set name="horas"><srai>TRANSFORMA A HORAS</srai></set><set name="numero_horas"><srai>COUNT <get name="horas"/></srai></set></think>
+            Las horas disponibles ese día son <get name="horas"/> <srai>FUNCION QUE PREGUNTA SI QUIERE RESERVAR ALGUNA HORA</srai>
+          </li>
+        <li value="TRUE">No hay ninguna hora disponible, desea comprobar otro dia?</li>
+      </condition>
+    </template>
+  </category>
+
+  <!-- Pregunta si quiere alguna hora de las mostradas-->
+
+  <category>
+    <pattern>FUNCION QUE PREGUNTA SI QUIERE RESERVAR ALGUNA HORA</pattern>
+    <template>Quieres alguna de estas horas?</template>
+  </category>
+
+  <!-- Pregunta la hora en el caso de no haberla dicho en la anterior pregunta -->
+
+  <category>
+    <pattern>(pues) [si claro] (que si)</pattern>
+    <that>* QUIERES ALGUNA DE ESTAS HORAS</that>
+    <template>A que hora?</template>
+  </category>
+
+  <!-- Reserva la hora elegida -->
+
+  <category>
+    <pattern>^ a las *</pattern>
+    <that>(* QUIERES ALGUNA DE ESTAS HORAS) (A QUE HORA)</that>
+    <template><think><srai>MARK ocupado AT <star index="2"/> ON <get name="dia"/></srai></think>
+      Tu reserva ha sido realizada con exito, quieres reservar otro dia?
+    </template>
+  </category>
+
+  <!-- Pregunta si desea otro dia en el caso de que no quiera ninguna de las horas mostradas -->
+
+  <category>
+     <pattern>^ no ^</pattern>
+     <that>* QUIERES ALGUNA DE ESTAS HORAS</that>
+     <template>Desea buscar en otro dia?</template>
+  </category>
+
+  <!-- Ofrece horas si el usuario duda o no le importa -->
+
+  <category>
+     <pattern>(me da igual) (no me importa)</pattern>
+     <that>* QUIERES ALGUNA DE ESTAS HORAS</that>
+     <template>
+       Te gustaria a las <set name="hora"><srai>TOP <get name="horas"/></srai></set>
+     </template>
+  </category>
+
+  <!-- Reserva a la primera hora de la lista -->
+
+  <category>
+     <pattern>(pues) [si claro] (que si)</pattern>
+     <that>Te gustaria a las *</that>
+     <template>
+       <think><srai>MARK ocupado AT <get name="hora"/> ON <get name="dia"/></srai></think>
+       Tu reserva ha sido realizada con exito, quieres reservar otro dia?
+     </template>
+  </category>
+
+  <!-- -->
+
+  <category>
+     <pattern>^ no ^</pattern>
+     <that>Te gustaria a las *</that>
+     <template>
+       <think>
+         <set name="horas"><srai>REMOVEITEM 1 IN <get name="horas"/></srai></set>
+         <set name="numero_horas"><srai>MINUS <get name="numero_horas"/> 1</srai></set>
+       </think>
+       <condition name="numero_horas">
+         <li value="0">
+           No hay ninguna hora mas disponible, quieres buscar en otro dia?
+         </li>
+         <li>
+          Te gustaria a las <set name="hora"><srai>TOP <get name="horas"/></srai></set>
+         </li>
+       </condition>
+     </template>
+  </category>
+
+
+  <!-- Devuelve las horas libres en formato HH:MM del "dia" almacenado como variable global -->
+
+  <category>
+    <pattern>TRANSFORMA A HORAS</pattern>
+    <template>
+      <think>
+        <set var="entrada"><srai>FRANJAS LIBRES DEL DIA <get name="dia"/> DESDE LAS 08:00 HASTA LAS 22:00</srai></set>
+        <set var="salida">null</set>
+        <set var="contador">0</set>
+        <set var="limitador"><srai>COUNT <get var="entrada"/></srai></set>
+        <set var="aux">0</set>
+        <condition var="contador">
+          <li><value><get var="limitador"/></value></li>
+          <li>
+            <set var="aux"><srai>MINUS <srai>TOP <get var="entrada"/></srai> 1</srai></set>
+            <set var="entrada"><srai>RESTO <get var="entrada"/></srai></set>
+            <condition var="salida">
+              <li value="null">
+                  <condition var="aux">
+                    <li value="8"><set var="salida">0<get var="aux"/>:00</set></li>
+                    <li value="9"><set var="salida">0<get var="aux"/>:00</set></li>
+                    <li><set var="salida"><get var="aux"/>:00</set></li>
+                  </condition>
+              </li>
+              <li>
+                  <condition var="aux">
+                    <li value="8"><set var="salida"><get var="salida"/> 0<get var="aux"/>:00</set></li>
+                    <li value="9"><set var="salida"><get var="salida"/> 0<get var="aux"/>:00</set></li>
+                    <li><set var="salida"><get var="salida"/> <get var="aux"/>:00</set></li>
+                  </condition>
+              </li>
+            </condition>
+            <set var="contador">
+              <map name="successor"><get var="contador"/></map>
+            </set>
+            <loop/>
+          </li>
+        </condition>
+      </think>
+      <get var="salida"/>
+    </template>
+  </category>
+
+
+  <!-- Respuesta afirmativa a buscar otro dia -->
+
+  <category>
+    <pattern>(pues) [si claro] (que si)</pattern>
+    <that>(NO HAY NINGUNA HORA DISPONIBLE, DESEA COMPROBAR OTRO DIA) (DESEA BUSCAR EN OTRO DIA) (* QUIERES RESERVAR OTRO DIA) (* QUIERES BUSCAR EN OTRO DIA)</that>
+    <template>Que dia quiere la cita?</template>
+  </category>
+
+  <!-- Respuesta a la funcion anterior -->
+
+  <category>
+    <pattern>(el dia *) (el *)</pattern>
+    <that>QUE DIA QUIERE LA CITA</that>
+    <template><srai>QUIERO UNA CITA PARA EL DIA <star/></srai></template>
+  </category>
+
+  <!-- Respuesta negativa a buscar otro dia -->
+
+  <category>
+    <pattern>^ no ^</pattern>
+    <that>(NO HAY NINGUNA HORA DISPONIBLE, DESEA COMPROBAR OTRO DIA) (DESEA BUSCAR EN OTRO DIA) (* QUIERES RESERVAR OTRO DIA) (* QUIERES BUSCAR EN OTRO DIA)</that>
+    <template><srai>ADIOS</srai></template>
+  </category>
+
+  <!-- Despedida -->
+
+  <category>
+    <pattern>ADIOS</pattern>
+    <template>Adios, muchas gracias por hablar con nosotros</template>
+  </category>
+
+  <!-- Pide una cita para un dia concreto sin el año -->
+
+  <category>
+    <pattern>_ cita (para) el (dia) * de _</pattern>
+    <template>
+      <srai>QUIERO UNA CITA PARA EL DIA <map name="dia_mes"><star index="2"/></map>-<map name="month_index_ES"><star index="3"/></map>-<map name="anio">2020</map></srai>
+    </template>
+  </category>
+
+  <!-- Responde a que dia quiere la cita sin el año -->
+
+  <category>
+    <pattern>(el dia * de _) (el * de _)</pattern>
+    <that>QUE DIA QUIERE LA CITA</that>
+    <template><srai>QUIERO UNA CITA PARA EL DIA <star index="1"/> de <star index="2"/> de 2020</srai></template>
+  </category>
+
+
+</aiml>

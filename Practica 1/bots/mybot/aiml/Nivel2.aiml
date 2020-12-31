@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.0">
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - FECHA CONCRETA A LAS HH:00 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <!-- Pide una cita para un dia concreto -->
+
+  <category>
+    <pattern>_ cita (para) el (dia) * de _ de _</pattern>
+    <template>
+      <srai>QUIERO UNA CITA PARA EL DIA <map name="dia_mes"><star index="2"/></map>-<map name="month_index_ES"><star index="3"/></map>-<map name="anio"><star index="4"/></map></srai>
+    </template>
+  </category>
+
+  <!-- Pide una cita para un dia concreto a una hora concreta -->
+
+  <category>
+    <pattern>_ cita (para) el (dia) * de _ de _ a las _</pattern>
+    <template>
+      <think><set var="ocupado"><srai>ESTA OCUPADO EL DIA <map name="dia_mes"><star index="2"/></map>-<map name="month_index_ES"><star index="3"/></map>-<map name="anio"><star index="4"/></map> A LAS <star index="5"/></srai></set></think>
+      <condition var="ocupado">
+        <li value="TRUE">
+          Ese dia a esa hora esta ocupado, quieres reservar otro dia?
+        </li>
+        <li value="FALSE">
+          <think><srai>MARK ocupado AT <star index="5"/> ON <map name="dia_mes"><star index="2"/></map>-<map name="month_index_ES"><star index="3"/></map>-<map name="anio"><star index="4"/></map></srai></think>
+            Tu reserva ha sido realizada con exito, quieres reservar otro dia?
+        </li>
+      </condition>
+    </template>
+  </category>
+
+  <!-- Responde a que dia quiere la cita en el formato "fecha concreta" del nivel 2 -->
+
+  <category>
+    <pattern>(el dia * de _ de *) (el * de _ de *)</pattern>
+    <that>QUE DIA QUIERE LA CITA</that>
+    <template><srai>QUIERO UNA CITA PARA EL DIA <star index="1"/> de <star index="2"/> de <star index="3"/></srai></template>
+  </category>
+
+  <!-- Responde a que dia y a que hora quiere la cita en el formato "fecha concreta" del nivel 2 -->
+
+  <category>
+    <pattern>(el dia * de _ de * a las _) (el * de _ de * a las _)</pattern>
+    <that>QUE DIA QUIERE LA CITA</that>
+    <template><srai>QUIERO UNA CITA PARA EL DIA <star index="1"/> de <star index="2"/> de <star index="3"/> a las <star index="4"/></srai></template>
+  </category>
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - HOY A LAS HH:00 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <!-- Pide una cita para hoy -->
+
+  <category>
+    <pattern>_ cita (para) hoy</pattern>
+    <template>
+      <srai>QUIERO UNA CITA PARA EL DIA <srai>INSERTA DE <srai>DATE</srai></srai></srai>
+    </template>
+  </category>
+
+  <!-- Regla que concatena una lista de palabras mediante un " de " (es la misma que hay en utilidades_2020 cambiando "_" por " de " -->
+  <category>
+    <pattern> inserta de * </pattern>
+    <template>
+      <think>
+      <set var="tmp"><star/></set>
+      <set var="solucion"><first><get var="tmp"/></first></set>
+      <set var="tmp"><rest><get var="tmp"/></rest></set>
+      <condition var="tmp">
+        <li value="NIL">
+        </li>
+        <li>
+          <set var="solucion"><get var="solucion"/> de <first><get var="tmp"/></first></set>
+          <set var="tmp"><rest><get var="tmp"/></rest></set>
+          <loop/>
+        </li>
+      </condition>
+      </think>
+    <get var="solucion"/>
+    </template>
+  </category>
+
+  <!-- Pide una cita para hoy a una hora concreta -->
+
+  <category>
+    <pattern>_ cita (para) hoy a las _</pattern>
+    <template>
+      <think><set var="ocupado"><srai>ESTA OCUPADO EL DIA <srai>CONVERSOR <srai>INSERTA DE <srai>DATE</srai></srai></srai> A LAS <star index="2"/></srai></set></think>
+      <condition var="ocupado">
+        <li value="TRUE">
+          Hoy a esa hora esta ocupado, quieres reservar otro dia?
+        </li>
+        <li value="FALSE">
+          <think><srai>MARK ocupado AT <star index="2"/> ON <srai>CONVERSOR <srai>INSERTA DE <srai>DATE</srai></srai></srai></srai></think>
+            Tu reserva ha sido realizada con exito, quieres reservar otro dia?
+        </li>
+      </condition>
+    </template>
+  </category>
+
+  <!-- Convierte la fecha al formato DD-MM-YY -->
+
+  <category>
+    <pattern>conversor * de * de *</pattern>
+    <template>
+      <map name="dia_mes"><star index="1"/></map>-<map name="month_index_ES"><star index="2"/></map>-<map name="anio"><star index="3"/></map>
+    </template>
+  </category>
+
+  <!-- Responde a que dia quiere la cita en el formato "hoy" del nivel 2 -->
+
+  <category>
+    <pattern>hoy</pattern>
+    <that>QUE DIA QUIERE LA CITA</that>
+    <template><srai>QUIERO UNA CITA PARA EL DIA <srai>CONVERSOR <srai>INSERTA DE <srai>DATE</srai></srai></srai></srai></template>
+  </category>
+
+  <!-- Responde a que dia y a que hora quiere la cita en el formato "hoy" del nivel 2 -->
+
+  <category>
+    <pattern>hoy a las *</pattern>
+    <that>QUE DIA QUIERE LA CITA</that>
+    <template><srai>QUIERO UNA CITA PARA EL DIA <srai>INSERTA DE <srai>DATE</srai></srai> A LAS <star/></srai></template>
+  </category>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - MAÑANA A LAS HH:00 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <!-- Pide una cita para mañana -->
+
+  <category>
+    <pattern>_ cita (para) manana</pattern>
+    <template>
+      <srai>QUIERO UNA CITA PARA EL DIA <srai>INSERTA DE <srai>DATE TOMORROW</srai></srai></srai>
+    </template>
+  </category>
+
+<!-- Pide una cita para mañana a una hora concreta -->
+
+  <category>
+    <pattern>_ cita (para) manana a las _</pattern>
+    <template>
+      <think><set var="ocupado"><srai>ESTA OCUPADO EL DIA <srai>CONVERSOR <srai>INSERTA DE <srai>DATE TOMORROW</srai></srai></srai> A LAS <star index="2"/></srai></set></think>
+      <condition var="ocupado">
+        <li value="TRUE">
+          Manana a esa hora esta ocupado, quieres reservar otro dia?
+        </li>
+        <li value="FALSE">
+          <think><srai>MARK ocupado AT <star index="2"/> ON <srai>CONVERSOR <srai>INSERTA DE <srai>DATE TOMORROW</srai></srai></srai></srai></think>
+            Tu reserva ha sido realizada con exito, quieres reservar otro dia?
+        </li>
+      </condition>
+    </template>
+  </category>
+
+  <!-- Responde a que dia quiere la cita en el formato "mañana" del nivel 2 -->
+
+  <category>
+    <pattern>manana</pattern>
+    <that>QUE DIA QUIERE LA CITA</that>
+    <template><srai>QUIERO UNA CITA PARA EL DIA <srai>CONVERSOR <srai>INSERTA DE <srai>DATE TOMORROW</srai></srai></srai></srai></template>
+  </category>
+
+  <!-- Responde a que dia y a que hora quiere la cita en el formato "mañana" del nivel 2 -->
+
+  <category>
+    <pattern>manana a las *</pattern>
+    <that>QUE DIA QUIERE LA CITA</that>
+    <template><srai>QUIERO UNA CITA PARA EL DIA <srai>INSERTA DE <srai>DATE TOMORROW</srai></srai> A LAS <star/></srai></template>
+  </category>
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - PASADO MAÑANA A LAS HH:00 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+    <!-- Pide una cita para pasado mañana -->
+
+    <category>
+      <pattern>_ cita (para) pasado manana</pattern>
+      <template>
+        <srai>QUIERO UNA CITA PARA EL DIA <srai>INSERTA DE <srai>DAYAFTERTOMORROWDATE</srai></srai></srai>
+      </template>
+    </category>
+
+  <!-- Pide una cita para pasado mañana a una hora concreta -->
+
+    <category>
+      <pattern>_ cita (para) pasado manana a las _</pattern>
+      <template>
+        <think><set var="ocupado"><srai>ESTA OCUPADO EL DIA <srai>CONVERSOR <srai>INSERTA DE <srai>DAYAFTERTOMORROWDATE</srai></srai></srai> A LAS <star index="2"/></srai></set></think>
+        <condition var="ocupado">
+          <li value="TRUE">
+            Pasado manana a esa hora esta ocupado, quieres reservar otro dia?
+          </li>
+          <li value="FALSE">
+            <think><srai>MARK ocupado AT <star index="2"/> ON <srai>CONVERSOR <srai>INSERTA DE <srai>DAYAFTERTOMORROWDATE</srai></srai></srai></srai></think>
+              Tu reserva ha sido realizada con exito, quieres reservar otro dia?
+          </li>
+        </condition>
+      </template>
+    </category>
+
+    <!-- Responde a que dia quiere la cita en el formato "pasado mañana" del nivel 2 -->
+
+    <category>
+      <pattern>pasado manana</pattern>
+      <that>QUE DIA QUIERE LA CITA</that>
+      <template><srai>QUIERO UNA CITA PARA EL DIA <srai>CONVERSOR <srai>INSERTA DE <srai>DAYAFTERTOMORROWDATE</srai></srai></srai></srai></template>
+    </category>
+
+    <!-- Responde a que dia y a que hora quiere la cita en el formato "pasado mañana" del nivel 2 -->
+
+    <category>
+      <pattern>pasado manana a las *</pattern>
+      <that>QUE DIA QUIERE LA CITA</that>
+      <template><srai>QUIERO UNA CITA PARA EL DIA <srai>INSERTA DE <srai>DAYAFTERTOMORROWDATE</srai></srai> A LAS <star/></srai></template>
+    </category>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - EL PROXIMO (DIA DE LA SEMANA) A LAS HH:00 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+    <!-- Pide una cita para el siguiente dia de la semana -->
+
+    <category>
+      <pattern>_ cita (para) el [proximo siguiente] *</pattern>
+      <template>
+        <srai>QUIERO UNA CITA PARA EL DIA <srai>INSERTA DE <srai>DATE ON <star index="2"/></srai></srai></srai>
+      </template>
+    </category>
+
+  <!-- Pide una cita para el siguiente dia de la semana a una hora concreta -->
+
+    <category>
+      <pattern>_ cita (para) el [proximo siguiente] * a las _</pattern>
+      <template>
+        <think><set var="ocupado"><srai>ESTA OCUPADO EL DIA <srai>CONVERSOR <srai>INSERTA DE <srai>DATE ON <star index="2"/></srai></srai></srai> A LAS <star index="3"/></srai></set></think>
+        <condition var="ocupado">
+          <li value="TRUE">
+            Ese dia a esa hora esta ocupado, quieres reservar otro dia?
+          </li>
+          <li value="FALSE">
+            <think><srai>MARK ocupado AT <star index="3"/> ON <srai>CONVERSOR <srai>INSERTA DE <srai>DATE ON <star index="2"/></srai></srai></srai></srai></think>
+              Tu reserva ha sido realizada con exito, quieres reservar otro dia?
+          </li>
+        </condition>
+      </template>
+    </category>
+
+    <!-- Responde a que dia quiere la cita en el formato "el siguiente dia de la semana" del nivel 2 -->
+
+    <category>
+      <pattern>el [proximo siguiente] *</pattern>
+      <that>QUE DIA QUIERE LA CITA</that>
+      <template><srai>QUIERO UNA CITA PARA EL DIA <srai>CONVERSOR <srai>INSERTA DE <srai>DATE ON <star/></srai></srai></srai></srai></template>
+    </category>
+
+    <!-- Responde a que dia y a que hora quiere la cita en el formato "el siguiente dia de la semana" del nivel 2 -->
+
+    <category>
+      <pattern>el [proximo siguiente] * a las *</pattern>
+      <that>QUE DIA QUIERE LA CITA</that>
+      <template><srai>QUIERO UNA CITA PARA EL DIA <srai>INSERTA DE <srai>DATE ON <star index="1"/></srai></srai> A LAS <star index="2"/></srai></template>
+    </category>
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - FECHA CONCRETA POR LA MAÑANA/TARDE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <!-- Devuelve las horas libres por la mañana en formato HH:MM del "dia" almacenado como variable global -->
+
+  <category>
+    <pattern>TRANSFORMA A HORAS MANANA</pattern>
+    <template>
+      <think>
+        <set var="entrada"><srai>FRANJAS LIBRES DEL DIA <get name="dia"/> DESDE LAS 08:00 HASTA LAS 12:00</srai></set>
+        <set var="salida">null</set>
+        <set var="contador">0</set>
+        <set var="limitador"><srai>COUNT <get var="entrada"/></srai></set>
+        <set var="aux">0</set>
+        <condition var="contador">
+          <li><value><get var="limitador"/></value></li>
+          <li>
+            <set var="aux"><srai>MINUS <srai>TOP <get var="entrada"/></srai> 1</srai></set>
+            <set var="entrada"><srai>RESTO <get var="entrada"/></srai></set>
+            <condition var="salida">
+              <li value="null">
+                  <condition var="aux">
+                    <li value="8"><set var="salida">0<get var="aux"/>:00</set></li>
+                    <li value="9"><set var="salida">0<get var="aux"/>:00</set></li>
+                    <li><set var="salida"><get var="aux"/>:00</set></li>
+                  </condition>
+              </li>
+              <li>
+                  <condition var="aux">
+                    <li value="8"><set var="salida"><get var="salida"/> 0<get var="aux"/>:00</set></li>
+                    <li value="9"><set var="salida"><get var="salida"/> 0<get var="aux"/>:00</set></li>
+                    <li><set var="salida"><get var="salida"/> <get var="aux"/>:00</set></li>
+                  </condition>
+              </li>
+            </condition>
+            <set var="contador">
+              <map name="successor"><get var="contador"/></map>
+            </set>
+            <loop/>
+          </li>
+        </condition>
+      </think>
+      <get var="salida"/>
+    </template>
+  </category>
+
+<!-- Devuelve las horas libres por la tarde en formato HH:MM del "dia" almacenado como variable global -->
+
+  <category>
+    <pattern>TRANSFORMA A HORAS TARDE</pattern>
+    <template>
+      <think>
+        <set var="entrada"><srai>FRANJAS LIBRES DEL DIA <get name="dia"/> DESDE LAS 13:00 HASTA LAS 20:00</srai></set>
+        <set var="salida">null</set>
+        <set var="contador">0</set>
+        <set var="limitador"><srai>COUNT <get var="entrada"/></srai></set>
+        <set var="aux">0</set>
+        <condition var="contador">
+          <li><value><get var="limitador"/></value></li>
+          <li>
+            <set var="aux"><srai>MINUS <srai>TOP <get var="entrada"/></srai> 1</srai></set>
+            <set var="entrada"><srai>RESTO <get var="entrada"/></srai></set>
+            <condition var="salida">
+              <li value="null">
+                  <condition var="aux">
+                    <li value="8"><set var="salida">0<get var="aux"/>:00</set></li>
+                    <li value="9"><set var="salida">0<get var="aux"/>:00</set></li>
+                    <li><set var="salida"><get var="aux"/>:00</set></li>
+                  </condition>
+              </li>
+              <li>
+                  <condition var="aux">
+                    <li value="8"><set var="salida"><get var="salida"/> 0<get var="aux"/>:00</set></li>
+                    <li value="9"><set var="salida"><get var="salida"/> 0<get var="aux"/>:00</set></li>
+                    <li><set var="salida"><get var="salida"/> <get var="aux"/>:00</set></li>
+                  </condition>
+              </li>
+            </condition>
+            <set var="contador">
+              <map name="successor"><get var="contador"/></map>
+            </set>
+            <loop/>
+          </li>
+        </condition>
+      </think>
+      <get var="salida"/>
+    </template>
+  </category>
+
+  <!-- Pide una cita para un dia concreto por la mañana/tarde -->
+
+  <category>
+    <pattern>_ cita (para) el (dia) * de _ de _ por la _</pattern>
+    <template>
+      <think>
+        <set name="dia"><map name="dia_mes"><star index="2"/></map>-<map name="month_index_ES"><star index="3"/></map>-<map name="anio"><star index="4"/></map></set>
+        <set var="ocupado"><srai>TRANSFORMA A HORAS <star index="5"/></srai></set>
+      </think>
+      <condition var="ocupado">
+        <li value="unknown:00">
+          Ese dia por la <star index="5"/> esta ocupado, quieres reservar otro dia?
+        </li>
+        <li>
+          Ese dia por la <star index="5"/> estan libres las siguientes horas <get var="ocupado"/> <srai>FUNCION QUE PREGUNTA SI QUIERE RESERVAR ALGUNA HORA</srai>
+        </li>
+      </condition>
+    </template>
+  </category>
+
+  <!-- Responde a que dia y a que hora quiere la cita en el formato "fecha concreta" del nivel 2 -->
+
+  <category>
+    <pattern>(el dia * de _ de * por la _) (el * de _ de * por la _)</pattern>
+    <that>QUE DIA QUIERE LA CITA</that>
+    <template><srai>QUIERO UNA CITA PARA EL DIA <star index="1"/> de <star index="2"/> de <star index="3"/> POR LA <star index="4"/></srai></template>
+  </category>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - HOY POR LA MAÑANA/TARDE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+
+<!-- Pide una cita para hoy por la manana/tarde-->
+
+<category>
+  <pattern>_ cita (para) hoy por la _</pattern>
+  <template>
+    <think>
+     <set name="dia"><srai>CONVERSOR <srai>INSERTA DE <srai>DATE</srai></srai></srai></set>
+     <set var="ocupado"><srai>TRANSFORMA A HORAS <star index="2"/></srai></set>
+    </think>
+    <condition var="ocupado">
+      <li value="unknown:00">
+        Hoy por la <star index="2"/> esta ocupado, quieres reservar otro dia?
+      </li>
+      <li>
+        Hoy por la <star index="2"/> estan libres las siguientes horas <get var="ocupado"/> <srai>FUNCION QUE PREGUNTA SI QUIERE RESERVAR ALGUNA HORA</srai>
+      </li>
+    </condition>
+  </template>
+</category>
+
+<!-- Responde a que dia y si por la manana o por la tarde quiere la cita en el formato "hoy" del nivel 2 -->
+
+<category>
+  <pattern>hoy por la *</pattern>
+  <that>QUE DIA QUIERE LA CITA</that>
+  <template><srai>QUIERO UNA CITA PARA EL DIA <srai>INSERTA DE <srai>DATE</srai></srai> POR LA <star/></srai></template>
+</category>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - MAÑANA POR LA MAÑANA/TARDE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+
+<!-- Pide una cita para mañana por la manana/tarde-->
+
+<category>
+  <pattern>_ cita (para) manana por la _</pattern>
+  <template>
+    <think>
+     <set name="dia"><srai>CONVERSOR <srai>INSERTA DE <srai>DATE TOMORROW</srai></srai></srai></set>
+     <set var="ocupado"><srai>TRANSFORMA A HORAS <star index="2"/></srai></set>
+    </think>
+    <condition var="ocupado">
+      <li value="unknown:00">
+        Manana por la <star index="2"/> esta ocupado, quieres reservar otro dia?
+      </li>
+      <li>
+        Manana por la <star index="2"/> estan libres las siguientes horas <get var="ocupado"/> <srai>FUNCION QUE PREGUNTA SI QUIERE RESERVAR ALGUNA HORA</srai>
+      </li>
+    </condition>
+  </template>
+</category>
+
+<!-- Responde a que dia y si por la manana o por la tarde quiere la cita en el formato "MAÑANA" del nivel 2 -->
+
+<category>
+  <pattern>manana por la *</pattern>
+  <that>QUE DIA QUIERE LA CITA</that>
+  <template><srai>QUIERO UNA CITA PARA EL DIA <srai>INSERTA DE <srai>DATE TOMORROW</srai></srai> POR LA <star/></srai></template>
+</category>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - PASADO MAÑANA POR LA MAÑANA/TARDE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+
+<!-- Pide una cita para pasado mañana por la mañana/tarde-->
+
+<category>
+  <pattern>_ cita (para) pasado manana por la _</pattern>
+  <template>
+    <think>
+     <set name="dia"><srai>CONVERSOR <srai>INSERTA DE <srai>DAYAFTERTOMORROWDATE</srai></srai></srai></set>
+     <set var="ocupado"><srai>TRANSFORMA A HORAS <star index="2"/></srai></set>
+    </think>
+    <condition var="ocupado">
+      <li value="unknown:00">
+        Pasado manana por la <star index="2"/> esta ocupado, quieres reservar otro dia?
+      </li>
+      <li>
+        Pasado manana por la <star index="2"/> estan libres las siguientes horas <get var="ocupado"/> <srai>FUNCION QUE PREGUNTA SI QUIERE RESERVAR ALGUNA HORA</srai>
+      </li>
+    </condition>
+  </template>
+</category>
+
+<!-- Responde a que dia y si por la mañana o por la tarde quiere la cita en el formato "pasado MAÑANA" del nivel 2 -->
+
+<category>
+  <pattern>pasado manana por la *</pattern>
+  <that>QUE DIA QUIERE LA CITA</that>
+  <template><srai>QUIERO UNA CITA PARA EL DIA <srai>INSERTA DE <srai>DAYAFTERTOMORROWDATE</srai></srai> POR LA <star/></srai></template>
+</category>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - EL PROXIMO (DIA DE LA SEMANA) POR LA MAÑANA/TARDE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <!-- Pide una cita para el dia de la semana que viene por la mañana/tarde-->
+  <category>
+    <pattern>_ cita (para) el [proximo siguiente] * por la _</pattern>
+    <template>
+      <think>
+        <set name="dia"><srai>CONVERSOR <srai>INSERTA DE <srai>DATE ON <star index="2"/></srai></srai></srai></set>
+        <set var="ocupado"><srai>TRANSFORMA A HORAS <star index="3"/></srai></set>
+      </think>
+      <condition var="ocupado">
+        <li value="unknown:00">
+          El proximo <star index="2"/> por la <star index="3"/> esta ocupado, quieres reservar otro dia?
+        </li>
+        <li>
+          El proximo <star index="2"/> por la <star index="3"/> estan libres las siguientes horas <get var="ocupado"/> <srai>FUNCION QUE PREGUNTA SI QUIERE RESERVAR ALGUNA HORA</srai>
+        </li>
+      </condition>
+    </template>
+  </category>
+
+  <!-- Responde a que dia y a que hora quiere la cita en el formato "el siguiente dia de la semana" del nivel 2 -->
+
+  <category>
+    <pattern>el [proximo siguiente] * por la *</pattern>
+    <that>QUE DIA QUIERE LA CITA</that>
+    <template><srai>QUIERO UNA CITA PARA EL DIA <srai>INSERTA DE <srai>DATE ON <star index="1"/></srai></srai> POR LA <star index="2"/></srai></template>
+  </category>
+</aiml>

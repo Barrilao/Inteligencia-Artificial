@@ -1,0 +1,21 @@
+francia:paris
+italia:roma
+belgica:bruselas
+noruega:oslo
+suecia:estocolmo
+dinamarca:copenhague
+bulgaria:sofia
+alemania:berlin
+españa:madrid
+afganistan:kabul
+albania:tirana
+andorra:andorra la vieja
+angola:luanda
+antigua y barbuda:saint john's
+arabia saudita:riad
+argelia:argel
+argentina:buenos aires
+armenia:erevan
+australia:camberra
+austria:viena
+azerbaiyan:baku

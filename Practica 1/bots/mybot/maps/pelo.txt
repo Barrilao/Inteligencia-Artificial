@@ -1,0 +1,8 @@
+antonio:negro
+alberto:pelirrojo
+ana:azul
+juan:castanio
+manolo:rubio
+julia:moreno
+elena:negro
+jose:moreno
